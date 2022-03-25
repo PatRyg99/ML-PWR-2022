@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from src.heuristics.heuristic import Heuristic
-from src.genetic_utils.initialization import init_population, generate_distance_matrix
+from src.genetic_utils.initialization import init_population
 from src.genetic_utils.fitness_function import fitness_function
 from src.genetic_utils.mutations import mutation_inverse
 from src.genetic_utils.crossovers import crossover_ordered
@@ -11,10 +11,9 @@ from src.genetic_utils.selection import selection_tournament
 
 class GeneticAlgorithm(Heuristic):
     def __init__(self, pop_size: int, num_genes: int, tour: int, iterations: int):
-        super().__init__(iterations)
+        super().__init__(num_genes, iterations)
 
         self.pop_size = pop_size
-        self.num_genes = num_genes
         self.tour = tour
 
         self.mutation_prob = 0.1
@@ -22,8 +21,8 @@ class GeneticAlgorithm(Heuristic):
 
         self.history = []
 
-    def on_start(self):
-        self.distance_matrix = generate_distance_matrix(self.num_genes)
+    def on_start(self, distance_matrix: np.ndarray):
+        super().on_start(distance_matrix)
         self.population = init_population(self.num_genes, self.pop_size)
         self.population_fitness = fitness_function(self.population, self.distance_matrix)
 
