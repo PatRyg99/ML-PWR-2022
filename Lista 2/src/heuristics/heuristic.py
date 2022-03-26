@@ -3,9 +3,9 @@ from tqdm import tqdm
 from pqdm.processes import pqdm
 from src.genetic_utils.initialization import generate_distance_matrix
 class Heuristic:
-    def __init__(self, num_genes: int, iterations: int):
+    def __init__(self, num_genes: int, generations: int):
         self.num_genes = num_genes
-        self.iterations = iterations
+        self.generations = generations
     
     def on_start(self, distance_matrix: np.ndarray):
         if distance_matrix is None:
@@ -22,9 +22,9 @@ class Heuristic:
     def run(self, distance_matrix: np.ndarray = None):
         self.on_start(distance_matrix)
 
-        with tqdm(total = self.iterations) as pbar:
-            for i in range(self.iterations):
-                pbar.set_description(f"Iteration {i+1}")
+        with tqdm(total = self.generations) as pbar:
+            for i in range(self.generations):
+                pbar.set_description(f"Generation {i+1}")
                 self.run_iteration(i)      
                 pbar.update()
 

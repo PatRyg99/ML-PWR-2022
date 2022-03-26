@@ -10,8 +10,8 @@ from src.genetic_utils.selection import selection_tournament
 
 
 class GeneticAlgorithm(Heuristic):
-    def __init__(self, pop_size: int, num_genes: int, tour: int, iterations: int):
-        super().__init__(num_genes, iterations)
+    def __init__(self, pop_size: int, num_genes: int, tour: int, generations: int):
+        super().__init__(num_genes, generations)
 
         self.pop_size = pop_size
         self.tour = tour
