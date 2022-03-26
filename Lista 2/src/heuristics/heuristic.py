@@ -1,26 +1,27 @@
 import numpy as np
 from tqdm import tqdm
 from pqdm.processes import pqdm
-from src.genetic_utils.initialization import generate_distance_matrix
-class Heuristic:
-    def __init__(self, num_genes: int, generations: int):
-        self.num_genes = num_genes
-        self.generations = generations
-    
-    def on_start(self, distance_matrix: np.ndarray):
-        if distance_matrix is None:
-            self.distance_matrix = generate_distance_matrix(self.num_genes)
-        else:
-            self.distance_matrix = distance_matrix
 
-    def on_end(self):
+from src.problems.problem import Problem
+class Heuristic:
+    def __init__(self, problem: Problem, generations: int):
+        self.problem = problem
+        self.generations = generations
+
+    def on_start(self, verbose: bool):
+        self.history = []
+        
+        if verbose:
+            print(f"Running problem: {self.problem.name}")
+
+    def on_end(self, verbose: bool):
         pass
     
     def run_repeat(self, repeats: int):
         pqdm(range(repeats), self.run)   
 
-    def run(self, distance_matrix: np.ndarray = None):
-        self.on_start(distance_matrix)
+    def run(self, verbose: bool = True):
+        self.on_start(verbose)
 
         with tqdm(total = self.generations) as pbar:
             for i in range(self.generations):
@@ -28,7 +29,7 @@ class Heuristic:
                 self.run_iteration(i)      
                 pbar.update()
 
-        self.on_end()
+        self.on_end(verbose)
 
     def run_iteration(self, i: int):
         raise NotImplementedError

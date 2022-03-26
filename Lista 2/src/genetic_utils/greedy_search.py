@@ -32,6 +32,6 @@ def greedy_search(input_distance_matrix: np.ndarray):
             solution_fitness += minimal_distance
 
         solutions[i] = solution
-        solutions_fitness[i] = solution_fitness
+        solutions_fitness[i] = solution_fitness + distance_matrix[int(solution[-1]), i]
 
     return solutions, solutions_fitness

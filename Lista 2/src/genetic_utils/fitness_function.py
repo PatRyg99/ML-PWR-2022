@@ -12,5 +12,10 @@ def fitness_function(population, distance_matrix):
             s2 = int(population[i, j + 1])
             
             distances[i] += distance_matrix[s1, s2]
+
+        # Add [end, start] path to complete tour
+        start = int(population[i, 0])
+        end = int(population[i, -1])
+        distances[i] += distance_matrix[start, end]
         
     return distances
