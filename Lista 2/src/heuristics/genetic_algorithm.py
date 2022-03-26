@@ -62,6 +62,9 @@ class GeneticAlgorithm(Heuristic):
             self.population[np.argmin(self.population_fitness)],
         ))
 
+    def best_solution(self):
+        return np.min(self.history["best"])
+
     def plot_history(self):
         xs = np.arange(len(self.history))
         

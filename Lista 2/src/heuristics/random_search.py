@@ -22,3 +22,6 @@ class RandomSearch(Heuristic):
     def run_iteration(self, i: int):
         self.solutions = random_search(self.problem.dimension, self.iterations)
         self.solutions_fitness = fitness_function(self.solutions, self.problem.distance_matrix)
+
+    def best_solution(self):
+        return np.min(self.history["fitness"])
