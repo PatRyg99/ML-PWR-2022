@@ -1,8 +1,9 @@
-import numpy as np
+import os
 from tqdm import tqdm
-from pqdm.processes import pqdm
+import pandas as pd
 
 from src.problems.problem import Problem
+from src.utils.timer import elapsed_timer
 class Heuristic:
     def __init__(self, problem: Problem, generations: int):
         self.problem = problem
@@ -24,14 +25,34 @@ class Heuristic:
         Runs after last iteration
         """
         pass
+    
+    def sanity_run(self):
+        """
+        Sanity check run to perform compilation
+        """
+        self.run(verbose=False)
 
-    def run_repeat(self, repeats: int):
+    def run_repeat(self, repeats: int, csv_path: str = None):
         """
-        Runs n indepent repeats of the heuristic
+        Runs n indepent repeats of the heuristic and dump results to csv if specified
         """
-        for i in range(repeats):
-            self.run(verbose=False)
-            print(f"Repeat [{i+1}/{repeats}]: {self.best_solution()}")
+        self.sanity_run()
+        results = []
+
+        with tqdm(total=repeats, desc=self.problem.name) as pbar:
+            for _ in range(repeats):
+                with elapsed_timer() as elapsed:
+                    self.run(verbose=False)
+
+                results.append((self.best_solution(), elapsed()))
+
+                pbar.set_postfix({"best": self.best_solution()})
+                pbar.update()
+
+        if csv_path:
+            os.makedirs(csv_path, exist_ok=True)
+            df = pd.DataFrame(results, columns=["Best", "Time"])
+            df.to_csv(os.path.join(csv_path, f"{self.__class__.__name__}.csv"))
 
     def run(self, verbose: bool = True):
         """

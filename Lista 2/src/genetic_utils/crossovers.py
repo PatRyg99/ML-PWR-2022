@@ -8,7 +8,7 @@ def crossover_ordered(pop_parents: np.ndarray, prob: float):
     for i in prange(pop_parents.shape[0]):
         p = np.random.rand(1)
 
-        if p >= prob:
+        if p <= prob:
             indices = np.random.choice(pop_parents.shape[2], 2, replace=False)
             indices.sort()
             start, end = indices[0], indices[1]

@@ -19,7 +19,7 @@ class GeneticAlgorithm(Heuristic):
         pop_size: int, 
         tour: int, 
         mutation_prob: float = 0.1, 
-        crossover_prob: float = 0.8
+        crossover_prob: float = 0.7
     ):
         super().__init__(problem, generations)
 
@@ -72,5 +72,5 @@ class GeneticAlgorithm(Heuristic):
         plt.plot(xs, self.history["mean"], label="Mean fitness")
         plt.plot(xs, self.history["worst"], label="Worst fitness")
 
-        plt.title("Fitness progression plot")
+        plt.title(f"Fitness progression plot: generations={self.generations}, population_size={self.pop_size}, tour_size={self.tour}")
         plt.legend()

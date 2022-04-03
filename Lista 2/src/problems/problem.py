@@ -17,7 +17,7 @@ class Problem:
             print(f"Loaded problem: {self.name}")
             print(f"DIMENSION = {self.dimension}")
             print(f"MINIMAL_LENGTH = {self.minimal_length}")
-            print("----------------------------------------------\n")
+            print("----------------------------------------------")
 
     
     @classmethod

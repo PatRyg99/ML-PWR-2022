@@ -21,7 +21,7 @@ def construct_distance_matrix(locations: np.ndarray, dimension: int):
     for i in prange(dimension):
         for j in prange(dimension):
             if i != j:
-                distance = np.sum((locations[i] - locations[j]) ** 2)
+                distance = np.linalg.norm(locations[i] - locations[j])
                 distance_matrix[i, j] = distance
                 distance_matrix[j, i] = distance
 
@@ -54,7 +54,7 @@ def convert_tsplib(problem_name: str):
 
     solution = re.findall(r'TOUR_SECTION\n((.|\n)*)', solution_data)[0]
     solution = preprocess_raw(solution)
-    solution = np.array(solution)[:dimension]
+    solution = np.array(solution)[:dimension] - 1
 
     solution_fitness = fitness_function(solution[None, :], distance_matrix)[0]
 
@@ -66,7 +66,7 @@ def convert_tsplib(problem_name: str):
         info_dict = {"DIMENSION": dimension, "MINIMAL_LENGTH": float(solution_fitness)}
         yaml.dump(info_dict, info_file)
 
-    np.savetxt(f"{problem_dir}/{problem_name}_d.txt", distance_matrix)
+    np.savetxt(f"{problem_dir}/{problem_name.lower()}_d.txt", distance_matrix)
 
 
 if __name__ == "__main__":

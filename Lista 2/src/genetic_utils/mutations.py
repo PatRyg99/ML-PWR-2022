@@ -20,7 +20,7 @@ def mutation_inverse(population: np.ndarray, prob: float):
     for i in prange(population.shape[0]):
         p = np.random.rand(1)
 
-        if p >= prob:
+        if p <= prob:
             indices = np.random.choice(population.shape[1], 2, replace=False)
             indices.sort()
 

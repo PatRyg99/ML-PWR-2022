@@ -1,4 +1,5 @@
 .data/
+.result/
 zbiory/
 .ipynb_checkpoints/
 __pycache__/
