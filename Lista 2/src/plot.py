@@ -1,7 +1,16 @@
+import os
+from typing import List
+
 import matplotlib.pyplot as plt
+import seaborn as sns
 import pandas as pd
 
+from src.problems.problem import Problem
+
 def plot_benchmark_params(data_path: str, optimum: float = None):
+    """
+    Plotting benchmark for initial GA parameters
+    """
     keys = ["best", "mean", "worst"]
 
     data = pd.read_csv(data_path)
@@ -46,6 +55,9 @@ def plot_benchmark_params(data_path: str, optimum: float = None):
 
 
 def plot_benchmark_probs(data_path: str, optimum: float = None):
+    """
+    Plotting benchmark for mutation and crossover probabilities
+    """
     keys = ["best", "mean", "worst"]
 
     data = pd.read_csv(data_path)
@@ -88,3 +100,72 @@ def plot_benchmark_probs(data_path: str, optimum: float = None):
     
     fig.tight_layout(rect=[0, 0, 1, 0.95])
 
+
+def plot_heuristic_comparison(heuristics: List[str], problems: List[str], return_data: bool = False):
+    fig, axes = plt.subplots(2, 4, figsize=(22, 8))
+    fig.suptitle("Comparison between heuristics", fontsize=20)
+
+    # Load data
+    problems_data = {}
+
+    for problem in problems:
+        problem_df = [
+            pd.DataFrame(
+                [(
+                    "Optimum",
+                    Problem.load_from_name(problem, verbose=False).minimal_length,
+                    0
+                )],
+                columns=["Name", "Best", "Time"]
+            )
+        ]
+
+        for heuristic in heuristics:
+            heuristic_df = pd.read_csv(os.path.join(".results", problem, heuristic + ".csv"))
+            heuristic_df["Name"] = heuristic
+            problem_df.append(heuristic_df)
+
+        problem_df = pd.concat(problem_df)
+        problems_data[problem] = problem_df
+    
+    # Plot data
+    for i, (problem_name, problem_df) in enumerate(problems_data.items()):
+        sns.boxplot(x="Name", y="Best", data=problem_df, ax=axes[0, i])
+        axes[0, i].grid(axis='y')
+        axes[0, i].set_xlabel(None)
+        axes[0, i].set_title(problem_name, fontsize=16)
+
+        sns.boxplot(x="Name", y="Time", data=problem_df, ax=axes[1, i])
+        axes[1, i].set_xlabel(None)
+        axes[1, i].grid(axis='y')
+
+        if i != 0:
+            axes[0, i].set_ylabel(None)
+            axes[1, i].set_ylabel(None)
+
+    plt.tight_layout()
+    plt.show()
+
+    if return_data:
+        return problems_data
+
+def plot_heuristic_comparison_dataframe(data):
+    """
+    Prepare pretty print of data
+    """
+    df = pd.concat(list(data.values()), keys=list(data.keys()))
+    df = df.reset_index(level=[0])
+    df = df.rename(columns={"level_0": "Problem"})
+    df = df.groupby(["Name", "Problem"]).mean()[["Best", "Time"]].unstack()
+    df = df.loc[["RandomSearch", "GreedySearch", "GeneticAlgorithm", "Optimum"]]
+    df = df.swaplevel(axis='columns')
+    df = df.reindex([
+        ("FRI26", "Best"), ("FRI26", "Time"), 
+        ("BERLIN52", "Best"), ("BERLIN52", "Time"),
+        ("KROA100", "Best"), ("KROA100", "Time"),
+        ("TSP225", "Best"), ("TSP225", "Time")
+        ], 
+        axis=1
+    )
+
+    return df
