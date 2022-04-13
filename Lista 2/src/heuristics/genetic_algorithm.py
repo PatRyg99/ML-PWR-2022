@@ -29,6 +29,9 @@ class GeneticAlgorithm(Heuristic):
         self.mutation_prob = mutation_prob
         self.crossover_prob = crossover_prob
 
+        self.best_fitness = np.inf
+        self.best_individual = None
+
     def on_start(self, verbose: bool):
         super().on_start(verbose)
         self.population = init_population(self.problem.dimension, self.pop_size)
@@ -37,7 +40,7 @@ class GeneticAlgorithm(Heuristic):
         self.log_history()
 
     def on_end(self, verbose: bool):
-        self.history = pd.DataFrame(self.history, columns=["best", "mean", "worst", "best_solution"])
+        self.history = pd.DataFrame(self.history, columns=["best", "mean", "worst"])
 
         if verbose:
             best_fitness = np.min(self.history["best"])
@@ -52,14 +55,19 @@ class GeneticAlgorithm(Heuristic):
         self.population = mutation_inverse(pop_children, prob=self.mutation_prob)
         self.population_fitness = fitness_function(self.population, self.problem.distance_matrix)
 
+        self.log_best()
         self.log_history()
+
+    def log_best(self):
+        if np.min(self.population_fitness) < self.best_fitness:
+            self.best_individual = self.population[np.argmin(self.population_fitness)]
+            self.best_fitness = np.min(self.population_fitness)
 
     def log_history(self):
         self.history.append((
             np.min(self.population_fitness),
             np.mean(self.population_fitness),
             np.max(self.population_fitness),
-            self.population[np.argmin(self.population_fitness)],
         ))
 
     def best_solution(self):
